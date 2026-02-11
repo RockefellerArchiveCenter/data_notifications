@@ -18,7 +18,7 @@ logger.setLevel(logging.INFO)
 
 full_config_path = f"/{getenv('ENV')}/{getenv('APP_CONFIG_PATH')}"
 NEXT_SERVICE_MAP = {
-    'digital_ingest_discovery': ['digital_ingest_assembly', 'iiif_derivatives'],
+    'digital_ingest_discovery': ['digital_ingest_assembly', 'iiif_derivatives'], #do these need to change to names from new GH repos?
     'digital_ingest_webhook': ['digital_ingest_transformation'],
     'iiif_derivatives': ['iiif_manifests']
 }
