@@ -10,7 +10,7 @@ from moto import mock_aws
 from moto.core import DEFAULT_ACCOUNT_ID
 from requests.exceptions import HTTPError
 
-from src.handle_digital_ingest_notifications import (
+from src.handle_data_notifications import (
     get_config, lambda_handler, send_http_request, send_next_services_message,
     update_events, update_package)
 
@@ -36,10 +36,10 @@ def config_fixture():
     }
 
 
-@patch('src.handle_digital_ingest_notifications.get_config')
-@patch('src.handle_digital_ingest_notifications.update_package')
-@patch('src.handle_digital_ingest_notifications.update_events')
-@patch('src.handle_digital_ingest_notifications.send_next_services_message')
+@patch('src.handle_data_notifications.get_config')
+@patch('src.handle_data_notifications.update_package')
+@patch('src.handle_data_notifications.update_events')
+@patch('src.handle_data_notifications.send_next_services_message')
 @pytest.mark.parametrize('data_from_file',
                          ['success_message.json'], indirect=True)
 def test_success_notification(
@@ -68,10 +68,10 @@ def test_success_notification(
         {'identifier': '20f8da26e268418ead4aa2365f816a08', 'origin': 'digitization'})
 
 
-@patch('src.handle_digital_ingest_notifications.get_config')
-@patch('src.handle_digital_ingest_notifications.update_package')
-@patch('src.handle_digital_ingest_notifications.update_events')
-@patch('src.handle_digital_ingest_notifications.send_next_services_message')
+@patch('src.handle_data_notifications.get_config')
+@patch('src.handle_data_notifications.update_package')
+@patch('src.handle_data_notifications.update_events')
+@patch('src.handle_data_notifications.send_next_services_message')
 @pytest.mark.parametrize('data_from_file',
                          ['success_message_with_size.json'], indirect=True)
 def test_success_notification_with_size(
@@ -100,10 +100,10 @@ def test_success_notification_with_size(
         {'identifier': '20f8da26e268418ead4aa2365f816a08', 'origin': 'digitization'})
 
 
-@patch('src.handle_digital_ingest_notifications.get_config')
-@patch('src.handle_digital_ingest_notifications.update_package')
-@patch('src.handle_digital_ingest_notifications.update_events')
-@patch('src.handle_digital_ingest_notifications.send_next_services_message')
+@patch('src.handle_data_notifications.get_config')
+@patch('src.handle_data_notifications.update_package')
+@patch('src.handle_data_notifications.update_events')
+@patch('src.handle_data_notifications.send_next_services_message')
 @pytest.mark.parametrize('data_from_file',
                          ['failure_message.json'], indirect=True)
 def test_failure_notification(
@@ -127,10 +127,10 @@ def test_failure_notification(
     mock_package.assert_called_once_with(mock_config(), package_id, None)
 
 
-@patch('src.handle_digital_ingest_notifications.get_config')
-@patch('src.handle_digital_ingest_notifications.update_package')
-@patch('src.handle_digital_ingest_notifications.update_events')
-@patch('src.handle_digital_ingest_notifications.send_next_services_message')
+@patch('src.handle_data_notifications.get_config')
+@patch('src.handle_data_notifications.update_package')
+@patch('src.handle_data_notifications.update_events')
+@patch('src.handle_data_notifications.send_next_services_message')
 @pytest.mark.parametrize('data_from_file',
                          ['success_message_missing_attributes.json'], indirect=True)
 def test_missing_attributes(
@@ -144,8 +144,8 @@ def test_missing_attributes(
         m.assert_not_called()
 
 
-@patch('src.handle_digital_ingest_notifications.send_http_request')
-@patch('src.handle_digital_ingest_notifications.construct_event_id')
+@patch('src.handle_data_notifications.send_http_request')
+@patch('src.handle_data_notifications.construct_event_id')
 def test_create_success_event(mock_id, mock_http, config_fixture):
     """Assert events are created with correct data"""
     event_id = '123456789'
@@ -170,8 +170,8 @@ def test_create_success_event(mock_id, mock_http, config_fixture):
         })
 
 
-@patch('src.handle_digital_ingest_notifications.send_http_request')
-@patch('src.handle_digital_ingest_notifications.construct_event_id')
+@patch('src.handle_data_notifications.send_http_request')
+@patch('src.handle_data_notifications.construct_event_id')
 def test_create_failure_event(mock_id, mock_http, config_fixture):
     """Assert events are created with correct data"""
     event_id = '123456789'
@@ -196,7 +196,7 @@ def test_create_failure_event(mock_id, mock_http, config_fixture):
         })
 
 
-@patch('src.handle_digital_ingest_notifications.send_http_request')
+@patch('src.handle_data_notifications.send_http_request')
 def test_create_package(mock_http, config_fixture):
     """Assert packages are created with the correct data"""
     mock_http.side_effect = [HTTPError(), None]
@@ -216,7 +216,7 @@ def test_create_package(mock_http, config_fixture):
     ])
 
 
-@patch('src.handle_digital_ingest_notifications.send_http_request')
+@patch('src.handle_data_notifications.send_http_request')
 def test_create_package_with_data(mock_http, config_fixture):
     """Assert packages are created with the correct data"""
     mock_http.side_effect = [HTTPError(), None]
@@ -241,7 +241,7 @@ def test_create_package_with_data(mock_http, config_fixture):
     ])
 
 
-@patch('src.handle_digital_ingest_notifications.send_http_request')
+@patch('src.handle_data_notifications.send_http_request')
 def test_update_package_with_data(mock_http, config_fixture):
     """Assert packages are created with the correct data"""
     data = {
