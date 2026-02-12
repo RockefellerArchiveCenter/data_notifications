@@ -3,32 +3,103 @@
 import json
 import logging
 import traceback
-import uuid
-from os import getenv
+from os import environ
 
 import boto3
-from requests import Session
-from requests.adapters import HTTPAdapter
-from requests.exceptions import HTTPError
-from urllib3 import Retry
+import urllib3
+
+http = urllib3.PoolManager()
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-full_config_path = f"/{getenv('ENV')}/{getenv('APP_CONFIG_PATH')}"
-NEXT_SERVICE_MAP = {
-    'digital_ingest_discovery': ['digital_ingest_assembly', 'iiif_derivatives'], #do these need to change to names from new GH repos?
-    'digital_ingest_webhook': ['digital_ingest_transformation'],
-    'iiif_derivatives': ['iiif_manifests']
-}
-zodiac_client = Session()
-retries = Retry(total=3,
-                backoff_factor=0.3,
-                status_forcelist=[500, 502, 503, 504])
-adapter = HTTPAdapter(max_retries=retries)
-zodiac_client.mount('http://', adapter)
-zodiac_client.mount('https://', adapter)
+full_config_path = f"/{environ.get('ENV')}/{environ.get('APP_CONFIG_PATH')}"
+
+
+def parse_attributes(attributes):
+    """Parses attributes from messages."""
+    color_name = 'attention' if attributes['outcome']['Value'] == 'FAILURE' else 'good'
+    refid = attributes.get('refid', {}).get('Value', None)
+    service = attributes['service']['Value']
+    outcome = attributes['outcome']['Value'].lower()
+    message = attributes.get('message', {}).get('Value')
+    traceback = attributes.get('traceback', {}).get('Value')
+    return color_name, refid, service, outcome, message, traceback
+
+
+def structure_teams_message(color_name, title, message, traceback, facts):
+    """Structures Teams message using arguments."""
+    body = [
+        {
+            "type": "TextBlock",
+                    "size": "default",
+                    "weight": "bolder",
+                    "text": title,
+                    "style": "heading",
+                    "wrap": True,
+                    "color": color_name
+        },
+        {
+            "type": "TextBlock",
+                    "text": message,
+                    "wrap": True
+        },
+
+    ]
+    if facts['RefID']:
+        body.append(
+            {
+                "type": "FactSet",
+                "facts": [{"title": k, "value": v} for k, v in facts.items()]
+            }
+        )
+    if traceback:
+        body.append({
+            "type": "TextBlock",
+            "fontType": "Monospace",
+            "text": traceback,
+            "wrap": True
+        })
+    notification = {
+        "type": "message",
+        "attachments": [
+            {
+                "contentType": "application/vnd.microsoft.card.adaptive",
+                "contentUrl": None,
+                "content": {
+                    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                    "type": "AdaptiveCard",
+                    "version": "1.4",
+                    "body": body
+                }
+            }
+        ]
+    }
+    if facts['Outcome'] == 'started':
+        url = 'https://digitized-image-qc.dev.rockarch.org' if environ.get(
+            'ENV') == 'dev' else 'https://digitized-image-qc.rockarch.org'
+        notification['attachments'][0]['content']['actions'] = [
+            {
+                "type": "Action.OpenUrl",
+                "title": "Go to Cue See",
+                "url": url
+            }
+        ]
+
+    return json.dumps(notification)
+
+
+def send_teams_message(message, url):
+    """Delivers message to Teams channel endpoint."""
+    response = http.request(
+        'POST',
+        url,
+        headers={
+            'Content-Type': 'application/json'},
+        body=message)
+    logger.info('Status Code: {}'.format(response.status))
+    logger.info('Response: {}'.format(response.data))
 
 
 def get_config(ssm_parameter_path):
@@ -43,8 +114,8 @@ def get_config(ssm_parameter_path):
     configuration = {}
     try:
         ssm_client = boto3.client(
-            'ssm',
-            region_name=getenv('AWS_DEFAULT_REGION', 'us-east-1'))
+            'ssm', region_name=environ.get(
+                'AWS_DEFAULT_REGION', 'us-east-1'))
 
         param_details = ssm_client.get_parameters_by_path(
             Path=ssm_parameter_path,
@@ -64,132 +135,26 @@ def get_config(ssm_parameter_path):
         return configuration
 
 
-def update_package(config, package_id, raw_package_data=None):
-    package_data = {"identifier": package_id}
-    if raw_package_data:
-        package_data.update(raw_package_data)
-    try:
-        send_http_request(
-            f'{config["ZODIAC_BASEURL"].rstrip("/")}/packages/{package_id}/',
-            'patch',
-            package_data)
-    except HTTPError:
-        send_http_request(
-            f'{config["ZODIAC_BASEURL"].rstrip("/")}/packages/',
-            'post',
-            package_data)
-
-
-def construct_event_id():
-    return str(uuid.uuid4())
-
-
-def update_events(config, package_id, service, outcome, message, traceback):
-    event_data = {
-        'outcome': outcome,
-        'service': service,
-        'package_identifier': package_id,
-        'message': message,
-        'traceback': traceback,
-        'identifier': construct_event_id()
-    }
-    send_http_request(
-        f'{config["ZODIAC_BASEURL"].rstrip("/")}/events/',
-        'post',
-        event_data)
-
-
-def send_http_request(url, method, data=None):
-    """Sends HTTP request and checks to ensure completion."""
-    logger.info(f"Sending {method} request to {url} with data {data}")
-    if data:
-        resp = getattr(zodiac_client, method)(url, json=data)
-    else:
-        resp = getattr(zodiac_client, method)(url)
-    try:
-        resp.raise_for_status()
-        return resp.json()
-    except HTTPError as err:
-        logging.error(err.response.text)
-        raise
-
-
-def send_next_services_message(current_service, package_id, package_origin, size, config):
-    """Sends message to start next service if applicable."""
-    try:
-        next_services = NEXT_SERVICE_MAP[current_service]
-        for next_service in next_services:
-            if next_service == 'iiif_derivatives' and package_origin != 'digitization':
-                pass
-            else:
-                logger.info(f"Starting service {next_service}")
-                client = boto3.client(
-                    'sns',
-                    region_name=getenv('AWS_DEFAULT_REGION', 'us-east-1'))
-                attributes = {
-                    'package_id': {
-                        'DataType': 'String',
-                        'StringValue': package_id,
-                    },
-                    'requested_status': {
-                        'DataType': 'String',
-                        'StringValue': 'START'
-                    },
-                    'service': {
-                        'DataType': 'String',
-                        'StringValue': next_service,
-                    }
-                }
-                if size:
-                    attributes['size'] = {
-                        'DataType': 'String',
-                        'StringValue': size}
-                client.publish(
-                    TopicArn=config['SNS_TOPIC'],
-                    MessageGroupId=f'digital_ingest_notifications-{package_id}',
-                    Message=f'Start service {next_service} for package {package_id}',
-                    MessageAttributes=attributes)
-                logger.info(
-                    f'Message to start service {next_service} for package {package_id} sent.')
-    except KeyError:
-        logger.info(f'No next service found for {current_service}')
-        pass
-
-
 def lambda_handler(event, context):
     """Main handler for function."""
-    logger.info("Message batch received.")
+    logger.info("Message received.")
 
     config = get_config(full_config_path)
-    for record in event['Records']:
-        try:
-            parsed_body = json.loads(record['body'])
-        except json.decoder.JSONDecodeError:
-            parsed_body = record['body']
 
-        attributes = record['messageAttributes']
-        package_id = attributes.get('package_id', {}).get('stringValue')
-        service = attributes.get('service', {}).get('stringValue')
-        outcome = attributes.get('outcome', {}).get('stringValue')
-        message = attributes.get('message', {}).get('stringValue')
-        size = attributes.get('size', {}).get('stringValue')
-
-        package_data = parsed_body if outcome == 'SUCCESS' else None
-        traceback = parsed_body if outcome == 'FAILURE' else None
-
-        if not all([package_id, service, outcome]):
-            logging.error(
-                f'Unable to find required values in attributes: {attributes}')
-            continue
-
-        update_package(config, package_id, package_data)
-        update_events(
-            config,
-            package_id,
-            service,
-            outcome,
+    title = event['Records'][0]['Sns']['Message']
+    attributes = event['Records'][0]['Sns']['MessageAttributes']
+    color_name, refid, service, outcome, message, traceback = parse_attributes(
+        attributes)
+    if outcome == 'failure':
+        structured_message = structure_teams_message(
+            color_name,
+            title,
             message,
-            traceback)
-
-        if outcome == 'SUCCESS':
-            send_next_services_message(service, package_id, package_data.get('origin'), size, config)
+            traceback,
+            {
+                'Service': service,
+                'Outcome': outcome,
+                'RefID': refid,
+            })
+        decrypted_url = config.get('TEAMS_URL')
+        send_teams_message(structured_message, decrypted_url)
