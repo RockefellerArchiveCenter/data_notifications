@@ -7,14 +7,14 @@ from unittest.mock import patch
 import boto3
 from moto import mock_aws
 
-from src.handle_digitized_image_notifications import (get_config,
+from src.handle_data_notifications import (get_config,
                                                       lambda_handler,
                                                       structure_teams_message)
 
 
-@patch('src.handle_digitized_image_notifications.structure_teams_message')
-@patch('src.handle_digitized_image_notifications.get_config')
-@patch('src.handle_digitized_image_notifications.send_teams_message')
+@patch('src.handle_data_notifications.structure_teams_message')
+@patch('src.handle_data_notifications.get_config')
+@patch('src.handle_data_notifications.send_teams_message')
 def test_success_notification(mock_send, mock_config, mock_structure):
     with open(Path('tests', 'fixtures', 'success_message.json'), 'r') as jf:
         message = json.load(jf)
@@ -24,9 +24,9 @@ def test_success_notification(mock_send, mock_config, mock_structure):
         mock_send.assert_not_called()
 
 
-@patch('src.handle_digitized_image_notifications.structure_teams_message')
-@patch('src.handle_digitized_image_notifications.get_config')
-@patch('src.handle_digitized_image_notifications.send_teams_message')
+@patch('src.handle_data_notifications.structure_teams_message')
+@patch('src.handle_data_notifications.get_config')
+@patch('src.handle_data_notifications.send_teams_message')
 def test_started_notification(mock_send, mock_config, mock_structure):
     with open(Path('tests', 'fixtures', 'started_message.json'), 'r') as jf:
         message = json.load(jf)
@@ -46,9 +46,9 @@ def test_started_notification(mock_send, mock_config, mock_structure):
         mock_send.assert_called_once()
 
 
-@patch('src.handle_digitized_image_notifications.structure_teams_message')
-@patch('src.handle_digitized_image_notifications.get_config')
-@patch('src.handle_digitized_image_notifications.send_teams_message')
+@patch('src.handle_data_notifications.structure_teams_message')
+@patch('src.handle_data_notifications.get_config')
+@patch('src.handle_data_notifications.send_teams_message')
 def test_completed_notification(mock_send, mock_config, mock_structure):
     with open(Path('tests', 'fixtures', 'completed_message.json'), 'r') as jf:
         message = json.load(jf)
@@ -68,9 +68,9 @@ def test_completed_notification(mock_send, mock_config, mock_structure):
         mock_send.assert_called_once()
 
 
-@patch('src.handle_digitized_image_notifications.structure_teams_message')
-@patch('src.handle_digitized_image_notifications.get_config')
-@patch('src.handle_digitized_image_notifications.send_teams_message')
+@patch('src.handle_data_notifications.structure_teams_message')
+@patch('src.handle_data_notifications.get_config')
+@patch('src.handle_data_notifications.send_teams_message')
 def test_failure_notification(mock_send, mock_config, mock_structure):
     with open(Path('tests', 'fixtures', 'failure_message.json'), 'r') as jf:
         message = json.load(jf)
