@@ -1,5 +1,5 @@
 # data_notifications
-Handles notifications for services associated data pipeline.
+Handles notifications for services associated with the ArchiveSpace data pipeline.
 
 ## Getting Started
 
