@@ -14,9 +14,9 @@ jobs:
       name: ${{ github.ref_name }}
 
     env:
-      LAMBDA_NAME: digital_ingest_notifications
-      LAMBDA_HANDLER_CODE: src/handle_digital_ingest_notifications.py
-      BASENAME: handle_digital_ingest_notifications.py
+      LAMBDA_NAME: data_notifications
+      LAMBDA_HANDLER_CODE: src/handle_data_notifications.py
+      BASENAME: handle_data_notifications.py
 
     steps:
       - name: Checkout code
