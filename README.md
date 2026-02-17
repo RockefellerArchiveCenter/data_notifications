@@ -25,7 +25,7 @@ This repository is intended to be deployed as a Lambda script in AWS infrastruct
 ### Expected Message Format
 
 The script is designed to consume message from an AWS Simple Queue Service (SQS) queue. These messages are expected have the following attributes:
-- `package_id` - an identifier associated with the package
+- `refiD` - the ArchivesSpace refid associated with the package
 - `service` - the service which produced the message
 - `outcome` - the outcome of the service (`STARTED`, `SUCCESS` or `FAILURE`)
 
