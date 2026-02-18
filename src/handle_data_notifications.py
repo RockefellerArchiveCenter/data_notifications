@@ -152,9 +152,7 @@ def lambda_handler(event, context):
                 message,
                 traceback,
                 {
-                    'Service': service,
                     'Outcome': outcome,
-                    'RefID': refid,
                 })
             decrypted_url = config.get('TEAMS_URL')
             send_teams_message(structured_message, decrypted_url)
