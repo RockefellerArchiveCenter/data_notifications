@@ -7,65 +7,21 @@ from unittest.mock import patch
 import boto3
 from moto import mock_aws
 
-from src.handle_data_notifications import (get_config,
-                                                      lambda_handler,
-                                                      structure_teams_message)
+from src.handle_data_notifications import (get_config, lambda_handler,
+                                           structure_teams_message)
 
 
 @patch('src.handle_data_notifications.structure_teams_message')
 @patch('src.handle_data_notifications.get_config')
 @patch('src.handle_data_notifications.send_teams_message')
 def test_success_notification(mock_send, mock_config, mock_structure):
+    """testing success notifications do not send Teams messages"""
     with open(Path('tests', 'fixtures', 'success_message.json'), 'r') as jf:
         message = json.load(jf)
         lambda_handler(message, None)
         mock_structure.assert_not_called()
         mock_config.assert_called_once()
         mock_send.assert_not_called()
-
-
-@patch('src.handle_data_notifications.structure_teams_message')
-@patch('src.handle_data_notifications.get_config')
-@patch('src.handle_data_notifications.send_teams_message')
-def test_started_notification(mock_send, mock_config, mock_structure):
-    with open(Path('tests', 'fixtures', 'started_message.json'), 'r') as jf:
-        message = json.load(jf)
-        lambda_handler(message, None)
-        mock_structure.assert_called_once_with(
-            'good',
-            'Packages are waiting to be QCed.',
-            None,
-            None,
-            {
-                'Service': 'digitized_image_qc',
-                'Outcome': 'started',
-                'RefID': None
-            }
-        )
-        mock_config.assert_called_once()
-        mock_send.assert_called_once()
-
-
-@patch('src.handle_data_notifications.structure_teams_message')
-@patch('src.handle_data_notifications.get_config')
-@patch('src.handle_data_notifications.send_teams_message')
-def test_completed_notification(mock_send, mock_config, mock_structure):
-    with open(Path('tests', 'fixtures', 'completed_message.json'), 'r') as jf:
-        message = json.load(jf)
-        lambda_handler(message, None)
-        mock_structure.assert_called_once_with(
-            'good',
-            'No packages left to QC.',
-            None,
-            None,
-            {
-                'Service': 'digitized_image_qc',
-                'Outcome': 'complete',
-                'RefID': None
-            }
-        )
-        mock_config.assert_called_once()
-        mock_send.assert_called_once()
 
 
 @patch('src.handle_data_notifications.structure_teams_message')

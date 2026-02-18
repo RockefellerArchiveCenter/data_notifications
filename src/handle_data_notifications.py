@@ -141,8 +141,8 @@ def lambda_handler(event, context):
 
     config = get_config(full_config_path)
     for record in event['Records']:
-        title = event['Records'][0]['Sns']['Message']
-        attributes = event['Records'][0]['Sns']['MessageAttributes']
+        title = record['Sns']['Message']
+        attributes = record['Sns']['MessageAttributes']
         color_name, refid, service, outcome, message, traceback = parse_attributes(
             attributes)
         if outcome == 'failure':
@@ -152,7 +152,9 @@ def lambda_handler(event, context):
                 message,
                 traceback,
                 {
+                    'Service': service,
                     'Outcome': outcome,
+                    'RefID': refid
                 })
             decrypted_url = config.get('TEAMS_URL')
             send_teams_message(structured_message, decrypted_url)
