@@ -13,10 +13,9 @@ cd data_notifications
 ## Service Flow
 
 The service processes requests as follows:
-- Parses the message body and attributes
-- Updates package data in the [Zodiac Backend API](https://github.com/RockefellerArchiveCenter/zodiac_backend/)
-- Updates the events associated with the package in the Zodiac Backend API
-- If the service completed successfully, send a message to start the next service, which will be handled by [digital_ingest_trigger](https://github.com/RockefellerArchiveCenter/digital_ingest_trigger/)
+- Parses the message attributes
+- Structures Teams message
+- Delivers message to Teams channel
 
 ## Usage
 
@@ -24,18 +23,12 @@ This repository is intended to be deployed as a Lambda script in AWS infrastruct
 
 ### Expected Message Format
 
-The script is designed to consume message from an AWS Simple Queue Service (SQS) queue. These messages are expected have the following attributes:
+The script is designed to consume message from an AWS Simple Notification Service (SNS) queue. These messages are expected have the following attributes:
 - `refiD` - the ArchivesSpace refid associated with the package
 - `service` - the service which produced the message
-- `outcome` - the outcome of the service (`STARTED`, `SUCCESS` or `FAILURE`)
+- `outcome` - the outcome of the service (`FAILURE`)
 
-If temporary storage is needed for the next task, the message includes a `size` attribute specifying the size of the original (compressed) package.
-
-If the message indicates the successful completion of a service, the body of the message contains package data.
-
-If the message indicates that a service has failed, the body of the message contains a detailed error traceback.
-
-Start messages do not include either package data or an error traceback.
+The body of the message contains a detailed error traceback.
 
 ## License
 
