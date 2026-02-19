@@ -14,8 +14,7 @@ cd data_notifications
 
 The service processes requests as follows:
 - Parses the message attributes
-- Structures Teams message
-- Delivers message to Teams channel
+- If message outcome indicates a failure, structures a Teams message and sends it to a configured channel
 
 ## Usage
 
@@ -23,7 +22,7 @@ This repository is intended to be deployed as a Lambda script in AWS infrastruct
 
 ### Expected Message Format
 
-The script is designed to consume message from an AWS Simple Notification Service (SNS) queue. These messages are expected have the following attributes:
+The script is designed to consume message from an AWS Simple Queue Service (SQS) queue. These messages are expected have the following attributes:
 - `refiD` - the ArchivesSpace refid associated with the package
 - `service` - the service which produced the message
 - `outcome` - the outcome of the service (`FAILURE`)
