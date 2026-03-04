@@ -3,7 +3,7 @@
 import json
 import logging
 import traceback
-from os import environ
+from os import getenv
 
 import boto3
 import urllib3
@@ -14,7 +14,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-full_config_path = f"/{environ.get('ENV')}/{environ.get('APP_CONFIG_PATH')}"
+full_config_path = f"/{getenv('ENV')}/{getenv('APP_CONFIG_PATH')}"
 
 
 def parse_attributes(attributes):
@@ -104,8 +104,7 @@ def get_config(ssm_parameter_path):
     configuration = {}
     try:
         ssm_client = boto3.client(
-            'ssm', region_name=environ.get(
-                'AWS_DEFAULT_REGION', 'us-east-1'))
+            'ssm', region_name=getenv('AWS_DEFAULT_REGION', 'us-east-1'))
 
         param_details = ssm_client.get_parameters_by_path(
             Path=ssm_parameter_path,
@@ -133,8 +132,7 @@ def lambda_handler(event, context):
     for record in event['Records']:
         title = record['Sns']['Message']
         attributes = record['Sns']['MessageAttributes']
-        color_name, refid, service, outcome, message, traceback = parse_attributes(
-            attributes)
+        color_name, refid, service, outcome, message, traceback = parse_attributes(attributes)
         if outcome == 'failure':
             structured_message = structure_teams_message(
                 color_name,
