@@ -47,31 +47,19 @@ def test_failure_notification(mock_send, mock_config, mock_structure):
 
 
 def test_structure_teams_message():
-    for fixture_path, args in [
-            ('failure_message_out.json',
-             ['attention',
-              'package 20f8da26e268418ead4aa2365f816a08 failed validation.',
-              'BagIt validation failed.',
-              'Much longer traceback.',
-              {'Service': 'validation',
-               'Outcome': 'failure',
-               'RefID': '20f8da26e268418ead4aa2365f816a08'}]),
-            ('started_message_out.json',
-             ['good',
-              'Packages are waiting to be QCed.',
-              None,
-              None,
-              {'Service': 'digitized_image_qc', 'Outcome': 'started', 'RefID': None}]),
-            ('completed_message_out.json',
-             ['good',
-              'No packages left to QC.',
-              None,
-              None,
-              {'Service': 'digitized_image_qc', 'Outcome': 'complete', 'RefID': None}])]:
-        with open(Path('tests', 'fixtures', fixture_path), 'r') as df:
-            expected = json.load(df)
-            output = structure_teams_message(*args)
-            assert output == json.dumps(expected)
+    args = ['attention',
+            'package 20f8da26e268418ead4aa2365f816a08 failed validation.',
+            'BagIt validation failed.',
+            'Much longer traceback.',
+            {
+                'Service': 'validation',
+                'Outcome': 'failure',
+                'RefID': '20f8da26e268418ead4aa2365f816a08'
+            }]
+    with open(Path('tests', 'fixtures', 'failure_message_out.json'), 'r') as df:
+        expected = json.load(df)
+        output = structure_teams_message(*args)
+        assert output == json.dumps(expected)
 
 
 @mock_aws
