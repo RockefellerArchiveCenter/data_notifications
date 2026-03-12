@@ -27,19 +27,40 @@ def test_success_notification(mock_send, mock_config, mock_structure):
 @patch('src.handle_data_notifications.structure_teams_message')
 @patch('src.handle_data_notifications.get_config')
 @patch('src.handle_data_notifications.send_teams_message')
-def test_failure_notification(mock_send, mock_config, mock_structure):
-    with open(Path('tests', 'fixtures', 'failure_message.json'), 'r') as jf:
+def test_failure_notification_fetch(mock_send, mock_config, mock_structure):
+    with open(Path('tests', 'fixtures', 'failure_message_fetch.json'), 'r') as jf:
         message = json.load(jf)
         lambda_handler(message, None)
         mock_structure.assert_called_once_with(
-            'attention',
-            'package 20f8da26e268418ead4aa2365f816a08 failed validation.',
-            'BagIt validation failed.',
-            'Much longer traceback.',
+            'fetch for updated archival objects failed.',
+            'fetch failed.',
             {
-                'Service': 'validation',
-                'Outcome': 'failure',
-                'RefID': '20f8da26e268418ead4aa2365f816a08'
+                'Service': "data_fetch",
+                'Outcome': "failure",
+                'Object Type': "archival object",
+                'Object Status': "updated",
+            }
+        )
+        mock_config.assert_called_once()
+        mock_send.assert_called_once()
+
+
+@patch('src.handle_data_notifications.structure_teams_message')
+@patch('src.handle_data_notifications.get_config')
+@patch('src.handle_data_notifications.send_teams_message')
+def test_failure_notification_object(mock_send, mock_config, mock_structure):
+    with open(Path('tests', 'fixtures', 'failure_message_merge.json'), 'r') as jf:
+        message = json.load(jf)
+        lambda_handler(message, None)
+        mock_structure.assert_called_once_with(
+            'merging archival objects failed.',
+            'merge failed.',
+            {
+                'Service': "data_merge",
+                'Outcome': "failure",
+                'Object Type': "archival object",
+                'Object Status': "updated",
+                'Object ID': "asdklfjalks"
             }
         )
         mock_config.assert_called_once()
@@ -47,14 +68,13 @@ def test_failure_notification(mock_send, mock_config, mock_structure):
 
 
 def test_structure_teams_message():
-    args = ['attention',
-            'package 20f8da26e268418ead4aa2365f816a08 failed validation.',
-            'BagIt validation failed.',
-            'Much longer traceback.',
+    args = ['fetch for updated archival objects failed.',
+            'fetch failed.',
             {
-                'Service': 'validation',
-                'Outcome': 'failure',
-                'RefID': '20f8da26e268418ead4aa2365f816a08'
+                'Service': "data_fetch",
+                'Outcome': "FAILURE",
+                'Object Type': "archival object",
+                'Object Status': "updated",
             }]
     with open(Path('tests', 'fixtures', 'failure_message_out.json'), 'r') as df:
         expected = json.load(df)
