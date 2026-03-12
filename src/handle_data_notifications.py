@@ -19,16 +19,16 @@ full_config_path = f"/{getenv('ENV')}/{getenv('APP_CONFIG_PATH')}"
 
 def parse_attributes(attributes):
     """Parses attributes from messages."""
-    color_name = 'attention' if attributes['outcome']['Value'] == 'FAILURE' else 'good'
-    refid = attributes.get('refid', {}).get('Value', None)
     service = attributes['service']['Value']
     outcome = attributes['outcome']['Value'].lower()
     message = attributes.get('message', {}).get('Value')
-    traceback = attributes.get('traceback', {}).get('Value')
-    return color_name, refid, service, outcome, message, traceback
+    object_type = attributes['object_type']['Value']
+    object_status = attributes['object_status']['Value']
+    object_id = attributes.get('object_id', {}).get('Value')
+    return service, outcome, message, object_type, object_status, object_id
 
 
-def structure_teams_message(color_name, title, message, traceback, facts):
+def structure_teams_message(title, message, facts):
     """Structures Teams message using arguments."""
     body = [
         {
@@ -38,7 +38,7 @@ def structure_teams_message(color_name, title, message, traceback, facts):
                     "text": title,
                     "style": "heading",
                     "wrap": True,
-                    "color": color_name
+                    "color": "attention"
         },
         {
             "type": "TextBlock",
@@ -47,20 +47,13 @@ def structure_teams_message(color_name, title, message, traceback, facts):
         },
 
     ]
-    if facts['RefID']:
-        body.append(
-            {
-                "type": "FactSet",
-                "facts": [{"title": k, "value": v} for k, v in facts.items()]
-            }
-        )
-    if traceback:
-        body.append({
-            "type": "TextBlock",
-            "fontType": "Monospace",
-            "text": traceback,
-            "wrap": True
-        })
+
+    body.append(
+        {
+            "type": "FactSet",
+            "facts": [{"title": k, "value": v} for k, v in facts.items()]
+        }
+    )
     notification = {
         "type": "message",
         "attachments": [
@@ -132,17 +125,19 @@ def lambda_handler(event, context):
     for record in event['Records']:
         title = record['Sns']['Message']
         attributes = record['Sns']['MessageAttributes']
-        color_name, refid, service, outcome, message, traceback = parse_attributes(attributes)
+        service, outcome, message, object_type, object_status, object_id = parse_attributes(attributes)
         if outcome == 'failure':
+            facts = {
+                'Service': service,
+                'Outcome': outcome,
+                'Object Type': object_type,
+                'Object Status': object_status,
+            }
+            if object_id:
+                facts["Object ID"] = object_id
             structured_message = structure_teams_message(
-                color_name,
                 title,
                 message,
-                traceback,
-                {
-                    'Service': service,
-                    'Outcome': outcome,
-                    'RefID': refid
-                })
+                facts)
             decrypted_url = config.get('TEAMS_URL')
             send_teams_message(structured_message, decrypted_url)

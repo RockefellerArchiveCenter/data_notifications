@@ -13,14 +13,14 @@
 						"type": "TextBlock",
 						"size": "default",
 						"weight": "bolder",
-						"text": "package 20f8da26e268418ead4aa2365f816a08 failed validation.",
+						"text": "fetch for updated archival objects failed.",
 						"style": "heading",
 						"wrap": true,
 						"color": "attention"
 					},
 					{
 						"type": "TextBlock",
-						"text": "BagIt validation failed.",
+						"text": "fetch failed.",
 						"wrap": true
 					},
 					{
@@ -28,24 +28,22 @@
 						"facts": [
 							{
 								"title": "Service",
-								"value": "validation"
+								"value": "data_fetch"
 							},
 							{
 								"title": "Outcome",
-								"value": "failure"
+								"value": "FAILURE"
 							},
 							{
-								"title": "RefID",
-								"value": "20f8da26e268418ead4aa2365f816a08"
+								"title": "Object Type",
+								"value": "archival object"
+							},
+							{
+								"title": "Object Status",
+								"value": "updated"
 							}
 						]
-					},
-					{
-						"type": "TextBlock",
-						"fontType": "Monospace",
-						"text": "Much longer traceback.",
-						"wrap": true
-					}
+					}			
 				]
 			}
 		}
