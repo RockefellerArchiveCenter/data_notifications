@@ -10,7 +10,7 @@
         "Signature": "tcc6faL2yUC6dgZdmrwh1Y4cGa/ebXEkAi6RibDsvpi+tE/1+82j...65r==",
         "SigningCertUrl": "https://sns.us-east-1.amazonaws.com/SimpleNotificationService-ac565b8b1a6c5d002d285f9598aa1d9b.pem",
         "MessageId": "95df01b4-ee98-5cb9-9903-4c221d41eb5e",
-        "Message": "package 20f8da26e268418ead4aa2365f816a08 is valid.",
+        "Message": "fetch for updated archival objects failed.",
         "MessageAttributes": {
           "service": {
             "Type": "String",
@@ -18,7 +18,7 @@
           },
           "outcome": {
             "Type": "String",
-            "Value": "SUCCESS"
+            "Value": "FAILURE"
           },
           "object_type":{
             "Type": "String",
@@ -27,6 +27,10 @@
           "object_status":{
             "Type": "String",
             "Value": "updated"
+          },
+          "message": {
+            "Type": "String",
+            "Value": "fetch failed."
           }
         },
         "Type": "Notification",
