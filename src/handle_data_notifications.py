@@ -19,12 +19,12 @@ full_config_path = f"/{getenv('ENV')}/{getenv('APP_CONFIG_PATH')}"
 
 def parse_attributes(attributes):
     """Parses attributes from messages."""
-    service = attributes['service']['Value']
-    outcome = attributes['outcome']['Value'].lower()
-    message = attributes.get('message', {}).get('Value')
-    object_type = attributes['object_type']['Value']
-    object_status = attributes['object_status']['Value']
-    object_id = attributes.get('object_id', {}).get('Value')
+    service = attributes['service']['stringValue']
+    outcome = attributes['outcome']['stringValue'].lower()
+    message = attributes.get('message', {}).get('stringValue')
+    object_type = attributes['object_type']['stringValue']
+    object_status = attributes['object_status']['stringValue']
+    object_id = attributes.get('object_id', {}).get('stringValue')
     return service, outcome, message, object_type, object_status, object_id
 
 
@@ -123,9 +123,14 @@ def lambda_handler(event, context):
 
     config = get_config(full_config_path)
     for record in event['Records']:
-        title = record['Sns']['Message']
-        attributes = record['Sns']['MessageAttributes']
+        try:
+            parsed_body = json.loads(record['body'])
+        except json.decoder.JSONDecodeError:
+            parsed_body = record['body']
+
+        attributes = record['messageAttributes']
         service, outcome, message, object_type, object_status, object_id = parse_attributes(attributes)
+
         if outcome == 'failure':
             facts = {
                 'Service': service,
@@ -136,8 +141,8 @@ def lambda_handler(event, context):
             if object_id:
                 facts["Object ID"] = object_id
             structured_message = structure_teams_message(
-                title,
                 message,
+                parsed_body,
                 facts)
             decrypted_url = config.get('TEAMS_URL')
             send_teams_message(structured_message, decrypted_url)

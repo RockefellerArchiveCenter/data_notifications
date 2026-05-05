@@ -1,47 +1,45 @@
 {
   "Records": [
     {
-      "EventVersion": "1.0",
-      "EventSubscriptionArn": "arn:aws:sns:us-east-1:123456789012:sns-lambda:21be56ed-a058-49f5-8c98-aedd2564c486",
-      "EventSource": "aws:sns",
-      "Sns": {
-        "SignatureVersion": "1",
-        "Timestamp": "2019-01-02T12:45:07.000Z",
-        "Signature": "tcc6faL2yUC6dgZdmrwh1Y4cGa/ebXEkAi6RibDsvpi+tE/1+82j...65r==",
-        "SigningCertUrl": "https://sns.us-east-1.amazonaws.com/SimpleNotificationService-ac565b8b1a6c5d002d285f9598aa1d9b.pem",
-        "MessageId": "95df01b4-ee98-5cb9-9903-4c221d41eb5e",
-        "Message": "merging archival objects failed.",
-        "MessageAttributes": {
-          "service": {
-            "Type": "String",
-            "Value": "data_merge"
-          },
-          "outcome": {
-            "Type": "String",
-            "Value": "FAILURE"
-          },
-          "object_type":{
-            "Type": "String",
-            "Value": "archival object"
-          },
-          "object_status":{
-            "Type": "String",
-            "Value": "updated"
-          },
-          "object_id":{
-            "Type": "String",
-            "Value": "asdklfjalks"
-          },
-          "message": {
-            "Type": "String",
-            "Value": "merge failed."
-          }
+      "messageId": "059f36b4-87a3-44ab-83d2-661975830a7d",
+      "receiptHandle": "AQEBwJnKyrHigUMZj6rYigCgxlaS3SLy0a...",
+      "body": "Much longer traceback.",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1545082649183",
+        "SenderId": "AIDAIENQZJOLO23YVJ4VO",
+        "ApproximateFirstReceiveTimestamp": "1545082649185"
+      },
+      "messageAttributes": {
+        "service": {
+          "dataType": "String",
+          "stringValue": "data_merge"
         },
-        "Type": "Notification",
-        "UnsubscribeUrl": "https://sns.us-east-1.amazonaws.com/?Action=Unsubscribe&amp;SubscriptionArn=arn:aws:sns:us-east-1:123456789012:test-lambda:21be56ed-a058-49f5-8c98-aedd2564c486",
-        "TopicArn":"arn:aws:sns:us-east-1:123456789012:sns-lambda",
-        "Subject": "TestInvoke"
-      }
+        "outcome": {
+          "dataType": "String",
+          "stringValue": "FAILURE"
+        },
+        "object_type": {
+          "dataType": "String",
+          "stringValue": "archival object"
+        },
+        "object_status": {
+          "dataType": "String",
+          "stringValue": "updated"
+        },
+        "object_id": {
+          "dataType": "String",
+          "stringValue": "asdklfjalks"
+        },
+        "message": {
+          "dataType": "String",
+          "stringValue": "merge failed."
+        }
+      },
+      "md5OfBody": "e4e68fb7bd0e697a0ae8f1bb342846b3",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:us-east-2:123456789012:my-queue",
+      "awsRegion": "us-east-2"
     }
   ]
 }
