@@ -32,8 +32,8 @@ def test_failure_notification_fetch(mock_send, mock_config, mock_structure):
         message = json.load(jf)
         lambda_handler(message, None)
         mock_structure.assert_called_once_with(
-            'fetch for updated archival objects failed.',
             'fetch failed.',
+            'Much longer traceback.',
             {
                 'Service': "data_fetch",
                 'Outcome': "failure",
@@ -53,8 +53,8 @@ def test_failure_notification_object(mock_send, mock_config, mock_structure):
         message = json.load(jf)
         lambda_handler(message, None)
         mock_structure.assert_called_once_with(
-            'merging archival objects failed.',
             'merge failed.',
+            'Much longer traceback.',
             {
                 'Service': "data_merge",
                 'Outcome': "failure",
