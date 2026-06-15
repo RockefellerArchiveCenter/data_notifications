@@ -1,0 +1,51 @@
+{
+	"type": "message",
+	"attachments": [
+		{
+			"contentType": "application/vnd.microsoft.card.adaptive",
+			"contentUrl": null,
+			"content": {
+				"$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+				"type": "AdaptiveCard",
+				"version": "1.4",
+				"body": [
+					{
+						"type": "TextBlock",
+						"size": "default",
+						"weight": "bolder",
+						"text": "fetch for updated archival objects failed.",
+						"style": "heading",
+						"wrap": true,
+						"color": "attention"
+					},
+					{
+						"type": "TextBlock",
+						"text": "fetch failed.",
+						"wrap": true
+					},
+					{
+						"type": "FactSet",
+						"facts": [
+							{
+								"title": "Service",
+								"value": "data_fetch"
+							},
+							{
+								"title": "Outcome",
+								"value": "FAILURE"
+							},
+							{
+								"title": "Object Type",
+								"value": "archival object"
+							},
+							{
+								"title": "Object Status",
+								"value": "updated"
+							}
+						]
+					}			
+				]
+			}
+		}
+	]
+}
