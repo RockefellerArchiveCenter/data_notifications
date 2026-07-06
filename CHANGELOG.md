@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.0.1](https://github.com/RockefellerArchiveCenter/data_notifications/compare/v1.0.0...v1.0.1) (2026-07-06)
+
+
+### Bug Fixes
+
+* **deps:** Scheduled dependency updates ([f8fda8c](https://github.com/RockefellerArchiveCenter/data_notifications/commit/f8fda8c25b62645a09de2959ce82523840be8975))
+* **deps:** Scheduled dependency updates ([f8fda8c](https://github.com/RockefellerArchiveCenter/data_notifications/commit/f8fda8c25b62645a09de2959ce82523840be8975))
+* **deps:** Scheduled dependency updates ([c5d33e1](https://github.com/RockefellerArchiveCenter/data_notifications/commit/c5d33e170cd4822ba6df715ca2b0399c431525a1))
+* **deps:** Scheduled dependency updates ([c5d33e1](https://github.com/RockefellerArchiveCenter/data_notifications/commit/c5d33e170cd4822ba6df715ca2b0399c431525a1))
+* **deps:** Scheduled dependency updates ([8bbf35d](https://github.com/RockefellerArchiveCenter/data_notifications/commit/8bbf35d0c6c70bdb431989664669694bb5b16234))
+* **deps:** Scheduled dependency updates ([0175ef6](https://github.com/RockefellerArchiveCenter/data_notifications/commit/0175ef6f78c6ebd98affcccea4433709f7bb53fb))
+* **deps:** Scheduled dependency updates ([0175ef6](https://github.com/RockefellerArchiveCenter/data_notifications/commit/0175ef6f78c6ebd98affcccea4433709f7bb53fb))
+* **deps:** Scheduled dependency updates ([9c16e25](https://github.com/RockefellerArchiveCenter/data_notifications/commit/9c16e25b1c88e1a06477fad2920e28b268ed979c))
+* **deps:** Scheduled dependency updates ([9c16e25](https://github.com/RockefellerArchiveCenter/data_notifications/commit/9c16e25b1c88e1a06477fad2920e28b268ed979c))
+* **deps:** Scheduled dependency updates ([b8edc44](https://github.com/RockefellerArchiveCenter/data_notifications/commit/b8edc446a089cd0064d8b7abdb09e128c8965208))
+
 ## 1.0.0 (2026-06-18)
 
 
