@@ -1,6 +1,6 @@
-boto3==1.43.38
+boto3==1.43.40
     # via moto
-botocore==1.43.38
+botocore==1.43.40
     # via
     #   boto3
     #   moto
@@ -45,7 +45,7 @@ requests==2.34.2
     # via
     #   moto
     #   responses
-responses==0.26.1
+responses==0.26.2
     # via moto
 s3transfer==0.19.0
     # via boto3
