@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.5](https://github.com/RockefellerArchiveCenter/data_notifications/compare/v1.0.4...v1.0.5) (2026-10-22)
+
+
+### Bug Fixes
+
+* update pip ([d26c201](https://github.com/RockefellerArchiveCenter/data_notifications/commit/d26c20157ca2739c7312bb186a8d65c57dc2bb5f))
+* update pip ([afe583f](https://github.com/RockefellerArchiveCenter/data_notifications/commit/afe583fcc31c4bb0b4abb514f515133db90ac589))
+* update pip ([afe583f](https://github.com/RockefellerArchiveCenter/data_notifications/commit/afe583fcc31c4bb0b4abb514f515133db90ac589))
+* update pip ([8cda647](https://github.com/RockefellerArchiveCenter/data_notifications/commit/8cda647ed7a07dab8fbdeac7b32fa0dec96bbddb))
+
 ## [1.0.4](https://github.com/RockefellerArchiveCenter/data_notifications/compare/v1.0.3...v1.0.4) (2026-10-05)
 
 
